@@ -1,0 +1,421 @@
+        -:    0:Source:auth.c
+        -:    0:Graph:app-auth.gcno
+        -:    0:Data:app-auth.gcda
+        -:    0:Runs:3
+        -:    1:#include "auth.h"
+        -:    2:#include <stdio.h>
+        -:    3:#include <string.h>
+        -:    4:#include <errno.h>
+        -:    5:#include <stdlib.h>
+        -:    6:#include <stdint.h>
+        -:    7:
+        -:    8:static int8_t g_db_path[260] = "users.db";
+        -:    9:
+function trim_nl called 199 returned 100% blocks executed 100%
+      199:   10:static void trim_nl(char *s){
+      199:   11:    size_t n = strlen(s);
+      398:   12:    while(n && (s[n-1]=='\n' || s[n-1]=='\r')) s[--n] = '\0';
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 50%
+branch  3 taken 50% (fallthrough)
+branch  4 taken 0%
+branch  5 taken 100% (fallthrough)
+      199:   13:}
+        -:   14:
+function ct_str_eq called 137 returned 100% blocks executed 100%
+      137:   15:static int ct_str_eq(const char *a, const char *b){
+      137:   16:    size_t la = strlen(a), lb = strlen(b), n = (la>lb? la:lb);
+      137:   17:    unsigned char diff = 0;
+     1071:   18:    for(size_t i=0;i<n;i++){
+branch  0 taken 87%
+branch  1 taken 13% (fallthrough)
+      934:   19:        unsigned char ca = (i<la)? (unsigned char)a[i] : 0;
+branch  0 taken 80% (fallthrough)
+branch  1 taken 20%
+      934:   20:        unsigned char cb = (i<lb)? (unsigned char)b[i] : 0;
+branch  0 taken 87% (fallthrough)
+branch  1 taken 13%
+      934:   21:        diff |= (unsigned char)(ca ^ cb);
+        -:   22:    }
+      137:   23:    return (diff == 0) && (la == lb);
+branch  0 taken 9% (fallthrough)
+branch  1 taken 91%
+branch  2 taken 100% (fallthrough)
+branch  3 taken 0%
+        -:   24:}
+        -:   25:
+function find_user called 21 returned 100% blocks executed 94%
+       21:   26:static int find_user(FILE *f, const char *username, char *out_pass, size_t out_sz){
+        -:   27:    char line[AUTH_MAX_USER + AUTH_MAX_PASS + 8];
+       21:   28:    rewind(f);
+call    0 returned 100%
+      146:   29:    while(fgets(line, sizeof line, f)){
+call    0 returned 100%
+branch  1 taken 94%
+branch  2 taken 6% (fallthrough)
+      137:   30:        trim_nl(line);
+call    0 returned 100%
+      137:   31:        char *colon = strchr(line, ':');
+     137*:   32:        if(!colon) continue;
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+      137:   33:        *colon = '\0';
+      137:   34:        const char *u = line;
+      137:   35:        const char *p = colon + 1;
+      137:   36:        if(ct_str_eq(u, username)){
+call    0 returned 100%
+branch  1 taken 9% (fallthrough)
+branch  2 taken 91%
+       12:   37:            if(out_pass){
+branch  0 taken 42% (fallthrough)
+branch  1 taken 58%
+        5:   38:                strncpy(out_pass, p, out_sz-1);
+        5:   39:                out_pass[out_sz-1] = '\0';
+        -:   40:            }
+       12:   41:            return 1;
+        -:   42:        }
+        -:   43:    }
+        9:   44:    return 0;
+        -:   45:}
+        -:   46:
+function auth_init called 3 returned 100% blocks executed 89%
+        3:   47:int auth_init(const char *db_path){
+        3:   48:    if(db_path && *db_path){
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 100% (fallthrough)
+branch  3 taken 0%
+        3:   49:        strncpy(g_db_path, db_path, sizeof g_db_path - 1);
+        3:   50:        g_db_path[sizeof g_db_path - 1] = '\0';
+        -:   51:    }
+        3:   52:    FILE *f = fopen(g_db_path, "a+");
+call    0 returned 100%
+       3*:   53:    if(!f) return -1;
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        3:   54:    fclose(f);
+call    0 returned 100%
+        3:   55:    return 0;
+        -:   56:}
+        -:   57:
+function auth_add called 14 returned 100% blocks executed 76%
+       14:   58:int auth_add(const char *username, const char *password){
+      14*:   59:    if(!username || !password) return -1;
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 0% (fallthrough)
+branch  3 taken 100%
+      14*:   60:    if(*username=='\0' || *password=='\0') return -1;
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 0% (fallthrough)
+branch  3 taken 100%
+       14:   61:    if(strchr(username, ':') || strchr(username, '\n') || strchr(password, '\n') || strchr(password, '\r'))
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 100% (fallthrough)
+branch  3 taken 0%
+branch  4 taken 100% (fallthrough)
+branch  5 taken 0%
+branch  6 taken 0% (fallthrough)
+branch  7 taken 100%
+    #####:   62:        return -1;
+        -:   63:
+       14:   64:    FILE *f = fopen(g_db_path, "r+");
+call    0 returned 100%
+       14:   65:    if(!f){
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+    #####:   66:        f = fopen(g_db_path, "a+");
+call    0 never executed
+    #####:   67:        if(!f) return -1;
+branch  0 never executed (fallthrough)
+branch  1 never executed
+        -:   68:    }
+       14:   69:    if(find_user(f, username, NULL, 0)){
+call    0 returned 100%
+branch  1 taken 50% (fallthrough)
+branch  2 taken 50%
+        7:   70:        fclose(f);
+call    0 returned 100%
+        7:   71:        errno = EEXIST;
+        7:   72:        return -1;
+        -:   73:    }
+        7:   74:    fseek(f, 0, SEEK_END);
+call    0 returned 100%
+        7:   75:    fprintf(f, "%s:%s\n", username, password);
+call    0 returned 100%
+        7:   76:    fclose(f);
+call    0 returned 100%
+        7:   77:    return 0;
+        -:   78:}
+        -:   79:
+function constant_time_compare called 5 returned 100% blocks executed 93%
+        5:   80:static int constant_time_compare(const char *a, const char *b) {
+        5:   81:  size_t la = strlen(a);
+        5:   82:  size_t lb = strlen(b);
+        5:   83:  size_t n = (la > lb ? la : lb);
+        5:   84:  unsigned char diff = 0;
+        -:   85:  
+        -:   86:  
+       54:   87:  for (size_t i = 0; i < n; i++) {
+branch  0 taken 91%
+branch  1 taken 9% (fallthrough)
+      49*:   88:    unsigned char ca = (i < la) ? (unsigned char)a[i] : 0;
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+       49:   89:    unsigned char cb = (i < lb) ? (unsigned char)b[i] : 0;
+branch  0 taken 90% (fallthrough)
+branch  1 taken 10%
+       49:   90:    diff |= (unsigned char)(ca ^ cb);
+        -:   91:  }
+        -:   92:  
+        5:   93:  return (diff == 0 && la == lb) ? 1 : 0;
+branch  0 taken 80% (fallthrough)
+branch  1 taken 20%
+branch  2 taken 100% (fallthrough)
+branch  3 taken 0%
+        -:   94:}
+        -:   95:
+        -:   96:
+function auth_check called 6 returned 100% blocks executed 85%
+        6:   97:int auth_check(const char *username, const char *password){
+       6*:   98:    if(!username || !password) return -1;
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 0% (fallthrough)
+branch  3 taken 100%
+        6:   99:    FILE *f = fopen(g_db_path, "r");
+call    0 returned 100%
+       6*:  100:    if(!f) return -1;
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  101:    char stored[AUTH_MAX_PASS + 1];
+        6:  102:    int32_t res = 0;
+        -:  103:    
+        6:  104:    if(find_user(f, username, stored, sizeof stored)){
+call    0 returned 100%
+branch  1 taken 83% (fallthrough)
+branch  2 taken 17%
+        5:  105:        res = constant_time_compare(stored, password);
+call    0 returned 100%
+        -:  106:    }
+        6:  107:    fclose(f);
+call    0 returned 100%
+        6:  108:    return res;
+        -:  109:}
+        -:  110:
+function commit_temp_file called 5 returned 100% blocks executed 25%
+        5:  111:static int commit_temp_file(const char *tmp_path, const char *final_path) {
+        5:  112:  remove(final_path);
+call    0 returned 100%
+        5:  113:  if (rename(tmp_path, final_path) == 0) {
+call    0 returned 100%
+branch  1 taken 100% (fallthrough)
+branch  2 taken 0%
+        5:  114:    return 0;
+        -:  115:  }
+        -:  116:
+    #####:  117:  FILE *src = fopen(tmp_path, "r");
+call    0 never executed
+    #####:  118:  FILE *dst = fopen(final_path, "w");
+call    0 never executed
+    #####:  119:  if (!src || !dst) {
+branch  0 never executed (fallthrough)
+branch  1 never executed
+branch  2 never executed (fallthrough)
+branch  3 never executed
+    #####:  120:    if (src) fclose(src);
+branch  0 never executed (fallthrough)
+branch  1 never executed
+call    2 never executed
+    #####:  121:    if (dst) fclose(dst);
+branch  0 never executed (fallthrough)
+branch  1 never executed
+call    2 never executed
+    #####:  122:    remove(tmp_path);
+call    0 never executed
+    #####:  123:    return -1;
+        -:  124:  }
+        -:  125:
+        -:  126:  char buf[4096];
+        -:  127:  size_t n;
+    #####:  128:  while ((n = fread(buf, 1, sizeof(buf), src)) > 0) {
+call    0 never executed
+branch  1 never executed
+branch  2 never executed (fallthrough)
+    #####:  129:    fwrite(buf, 1, n, dst);
+call    0 never executed
+        -:  130:  }
+        -:  131:  
+    #####:  132:  fclose(src);
+call    0 never executed
+    #####:  133:  fclose(dst);
+call    0 never executed
+    #####:  134:  remove(tmp_path);
+call    0 never executed
+    #####:  135:  return 0;
+        -:  136:}
+        -:  137:
+function process_db_line called 62 returned 100% blocks executed 95%
+       62:  138:static void process_db_line(const char *line, FILE *fout, const char *target_user,
+        -:  139:                            const char *new_user, const char *new_pass,
+        -:  140:                            int *found, int32_t *did_change) {
+        -:  141:  char raw[AUTH_MAX_USER + AUTH_MAX_PASS + 8];
+       62:  142:  strncpy(raw, line, sizeof(raw) - 1);
+       62:  143:  raw[sizeof(raw) - 1] = '\0';
+       62:  144:  trim_nl(raw);
+call    0 returned 100%
+        -:  145:
+       62:  146:  char *colon = strchr(raw, ':');
+       62:  147:  if (!colon) {
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+      57*:  148:    return;
+        -:  149:  }
+        -:  150:
+       62:  151:  *colon = '\0';
+       62:  152:  const char *u = raw;
+       62:  153:  const char *p = colon + 1;
+        -:  154:
+       62:  155:  if (strcmp(u, target_user) != 0) {
+branch  0 taken 92% (fallthrough)
+branch  1 taken 8%
+       57:  156:    fprintf(fout, "%s:%s\n", u, p);
+call    0 returned 100%
+       57:  157:    return;
+        -:  158:  }
+        -:  159:
+        5:  160:  *found = 1;
+        -:  161:  
+        5:  162:  if (new_user != NULL || new_pass != NULL) {
+branch  0 taken 80% (fallthrough)
+branch  1 taken 20%
+branch  2 taken 25% (fallthrough)
+branch  3 taken 75%
+        2:  163:    const char *write_user = new_user ? new_user : u;
+branch  0 taken 50% (fallthrough)
+branch  1 taken 50%
+        2:  164:    const char *write_pass = new_pass ? new_pass : p;
+branch  0 taken 50% (fallthrough)
+branch  1 taken 50%
+        2:  165:    fprintf(fout, "%s:%s\n", write_user, write_pass);
+call    0 returned 100%
+        -:  166:  }
+        -:  167:  
+        5:  168:  if (did_change) *did_change = 1;
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+        -:  169:}
+        -:  170:
+function rewrite_db_skip_or_replace called 9 returned 100% blocks executed 84%
+        9:  171:static int rewrite_db_skip_or_replace(const char *target_user,
+        -:  172:                                      const char *new_user, const char *new_pass,
+        -:  173:                                      int32_t *did_change) {
+        9:  174:  FILE *fin = fopen(g_db_path, "r");
+call    0 returned 100%
+       9*:  175:  if (!fin) return -1;
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        -:  176:
+        -:  177:  char tmp_path[300];
+        9:  178:  snprintf(tmp_path, sizeof(tmp_path), "%s.tmp", g_db_path);
+        -:  179:
+        9:  180:  FILE *fout = fopen(tmp_path, "w");
+call    0 returned 100%
+        9:  181:  if (!fout) { 
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+    #####:  182:    fclose(fin); 
+call    0 never executed
+    #####:  183:    return -1; 
+        -:  184:  }
+        -:  185:
+        -:  186:  char line[AUTH_MAX_USER + AUTH_MAX_PASS + 8];
+        9:  187:  int found = 0;
+        -:  188:
+        -:  189:
+       71:  190:  while (fgets(line, sizeof(line), fin)) {
+call    0 returned 100%
+branch  1 taken 87%
+branch  2 taken 13% (fallthrough)
+       62:  191:    process_db_line(line, fout, target_user, new_user, new_pass, &found, did_change);
+call    0 returned 100%
+        -:  192:  }
+        -:  193:
+        9:  194:  fclose(fin);
+call    0 returned 100%
+        9:  195:  fclose(fout);
+call    0 returned 100%
+        -:  196:
+        9:  197:  if (!found) {
+branch  0 taken 44% (fallthrough)
+branch  1 taken 56%
+        4:  198:    remove(tmp_path);
+call    0 returned 100%
+        4:  199:    errno = ENOENT;
+        4:  200:    return -1;
+        -:  201:  }
+        -:  202:
+        5:  203:  return commit_temp_file(tmp_path, g_db_path);
+call    0 returned 100%
+        -:  204:}
+        -:  205:
+function auth_delete called 6 returned 100% blocks executed 83%
+        6:  206:int auth_delete(const char *username){
+       6*:  207:    if(!username || !*username) return -1;
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 0% (fallthrough)
+branch  3 taken 100%
+        6:  208:    int changed = 0;
+        6:  209:    return rewrite_db_skip_or_replace(username, NULL, NULL, &changed);
+call    0 returned 100%
+        -:  210:}
+        -:  211:
+function auth_change_password called 2 returned 100% blocks executed 86%
+        2:  212:int auth_change_password(const char *username, const char *new_password){
+       2*:  213:    if(!username || !new_password || !*new_password) return -1;
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 100% (fallthrough)
+branch  3 taken 0%
+branch  4 taken 0% (fallthrough)
+branch  5 taken 100%
+        2:  214:    int changed = 0;
+        2:  215:    return rewrite_db_skip_or_replace(username, NULL, new_password, &changed);
+call    0 returned 100%
+        -:  216:}
+        -:  217:
+function auth_rename_user called 1 returned 100% blocks executed 73%
+        1:  218:int auth_rename_user(const char *old_username, const char *new_username){
+       1*:  219:    if(!old_username || !new_username || !*new_username) return -1;
+branch  0 taken 100% (fallthrough)
+branch  1 taken 0%
+branch  2 taken 100% (fallthrough)
+branch  3 taken 0%
+branch  4 taken 0% (fallthrough)
+branch  5 taken 100%
+        -:  220:
+        1:  221:    FILE *f = fopen(g_db_path, "r");
+call    0 returned 100%
+       1*:  222:    if(!f) return -1;
+branch  0 taken 0% (fallthrough)
+branch  1 taken 100%
+        1:  223:    if(find_user(f, new_username, NULL, 0)){
+call    0 returned 100%
+branch  1 taken 0% (fallthrough)
+branch  2 taken 100%
+    #####:  224:        fclose(f);
+call    0 never executed
+    #####:  225:        errno = EEXIST;
+    #####:  226:        return -1;
+        -:  227:    }
+        1:  228:    fclose(f);
+call    0 returned 100%
+        -:  229:
+        1:  230:    int changed = 0;
+        1:  231:    return rewrite_db_skip_or_replace(old_username, new_username, NULL, &changed);
+call    0 returned 100%
+        -:  232:}

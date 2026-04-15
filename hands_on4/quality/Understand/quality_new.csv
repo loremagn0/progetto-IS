@@ -1,0 +1,65 @@
+Kind,Name,Cyclomatic,MaxCyclomatic,RatioCommentToCode,AvgCyclomatic,CountLineCode,CountLine,AvgCountLine
+File,"app.h",,0,"0,25",0,8,18,0
+File,"auth.c",,7,"0,00",4,187,232,16
+File,"auth.c.func-c.html",0,0,"0,00",0,0,145,0
+File,"auth.c.func-c.html",0,0,"0,00",0,0,166,0
+File,"auth.c.func.html",0,0,"0,00",0,0,145,0
+File,"auth.c.func.html",0,0,"0,00",0,0,166,0
+File,"auth.c.gcov.html",0,0,"0,00",0,0,263,0
+File,"auth.c.gcov.html",0,0,"0,00",0,0,308,0
+File,"auth.h",,0,"0,33",0,6,16,0
+Function,"auth_add",7,,"0,00",,20,21,
+Function,"auth_change_password",2,,"0,00",,5,5,
+Function,"auth_check",4,,"0,00",,12,13,
+Function,"auth_delete",2,,"0,00",,5,5,
+Function,"auth_init",3,,"0,00",,10,10,
+Function,"auth_rename_user",4,,"0,00",,13,15,
+Function,"cancella_utente",3,,"0,14",,14,15,
+Static Function,"commit_temp_file",6,,"0,00",,23,26,
+File,"config.h",,0,"0,00",0,0,4,0
+Static Function,"constant_time_compare",6,,"0,00",,12,15,
+Function,"crea_utente",2,,"0,13",,15,19,
+Static Function,"ct_str_eq",5,,"0,00",,10,10,
+Function,"demo_comment_mix",1,,"0,00",,6,16,
+Function,"demo_ub",2,,"0,00",,12,12,
+Function,"demo_unspecified",1,,"0,00",,6,6,
+Function,"effettua_login",3,,"0,00",,9,9,
+Function,"esegui_cambio_password",4,,"0,00",,12,15,
+Function,"esegui_debug_extra",6,,"0,00",,16,17,
+Function,"esegui_rinomina_utente",7,,"0,00",,26,29,
+Static Function,"f_side",1,,"0,00",,1,1,
+Static Function,"find_user",5,,"0,00",,20,20,
+Function,"funzione_lunga",1,,"0,00",,10,10,
+Static Function,"g_side",1,,"0,00",,1,1,
+File,"gcov.css",0,0,"0,00",0,0,1073,0
+File,"gcov.css",0,0,"0,00",0,0,1073,0
+File,"index-sort-f.html",0,0,"0,00",0,0,117,0
+File,"index-sort-f.html",0,0,"0,00",0,0,105,0
+File,"index-sort-f.html",0,0,"0,00",0,0,105,0
+File,"index-sort-f.html",0,0,"0,00",0,0,117,0
+File,"index-sort-l.html",0,0,"0,00",0,0,117,0
+File,"index-sort-l.html",0,0,"0,00",0,0,105,0
+File,"index-sort-l.html",0,0,"0,00",0,0,105,0
+File,"index-sort-l.html",0,0,"0,00",0,0,117,0
+File,"index.html",0,0,"0,00",0,0,117,0
+File,"index.html",0,0,"0,00",0,0,105,0
+File,"index.html",0,0,"0,00",0,0,105,0
+File,"index.html",0,0,"0,00",0,0,117,0
+Function,"main",5,,"0,05",,20,25,
+File,"main.c",,10,"0,06",4,236,305,14
+File,"main.c.func-c.html",0,0,"0,00",0,0,152,0
+File,"main.c.func-c.html",0,0,"0,00",0,0,208,0
+File,"main.c.func.html",0,0,"0,00",0,0,152,0
+File,"main.c.func.html",0,0,"0,00",0,0,208,0
+File,"main.c.gcov.html",0,0,"0,00",0,0,430,0
+File,"main.c.gcov.html",0,0,"0,00",0,0,381,0
+Function,"menu_choice",4,,"0,00",,6,6,
+Function,"modifica_utente",8,,"0,00",,18,20,
+Function,"print_menu",1,,"0,00",,13,13,
+Static Function,"process_db_line",7,,"0,00",,26,32,
+File,"pthread_compat.h",,0,"0,00",0,0,48,0
+Function,"read_line",3,,"0,00",,10,10,
+Static Function,"rewrite_db_skip_or_replace",5,,"0,00",,26,34,
+Function,"select_operation",10,,"0,00",,15,15,
+Static Function,"trim_nl",2,,"0,00",,4,4,
+Function,"valida_password",9,,"0,00",,26,28,
